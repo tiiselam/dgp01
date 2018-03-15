@@ -1,0 +1,181 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{3C6B5813-9F6F-4C48-B1C0-A38348EAAC53}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>IntegradorDeGP</RootNamespace>
+    <AssemblyName>IntegradorDeGP</AssemblyName>
+    <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="CLManipulaArchivos, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\_DevLibrary\CLManipulaArchivos\bin\Release\CLManipulaArchivos.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.2.0\lib\net45\EntityFramework.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.2.0\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="EPPlus">
+      <HintPath>..\..\..\..\_DevTools\EPPlus 3.1.2\EPPlus.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Dynamics.GP.eConnect, Version=16.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=AMD64">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\Program Files (x86)\Microsoft Dynamics\eConnect 16.0\API\Microsoft.Dynamics.GP.eConnect.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Dynamics.GP.eConnect.Serialization, Version=16.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=AMD64">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\Program Files (x86)\Microsoft Dynamics\eConnect 16.0\API\Microsoft.Dynamics.GP.eConnect.Serialization.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.EnterpriseServices" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Security" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="BLL\docGetSiguienteStatus_Result.cs">
+      <DependentUpon>ModelIntegra.tt</DependentUpon>
+    </Compile>
+    <Compile Include="BLL\IntegraEntities.cs" />
+    <Compile Include="BLL\ModelIntegra.Context.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ModelIntegra.Context.tt</DependentUpon>
+    </Compile>
+    <Compile Include="BLL\ModelIntegra.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ModelIntegra.tt</DependentUpon>
+    </Compile>
+    <Compile Include="BLL\ModelIntegra.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ModelIntegra.edmx</DependentUpon>
+    </Compile>
+    <Compile Include="BLL\vwIntegracionesVentas.cs">
+      <DependentUpon>ModelIntegra.tt</DependentUpon>
+    </Compile>
+    <Compile Include="BLL\vwPreFacturas.cs">
+      <DependentUpon>ModelIntegra.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Cliente.cs" />
+    <Compile Include="BLL\EntitiesGP.cs" />
+    <Compile Include="BLL\comgp_fnDocStatusPreCondiciones_Result.cs">
+      <DependentUpon>ModelGP.tt</DependentUpon>
+    </Compile>
+    <Compile Include="IErrorIntegraGPEventArgs.cs" />
+    <Compile Include="FacturaDeVentaSOP.cs" />
+    <Compile Include="FacturaDeVentaSOPBandejaDB.cs" />
+    <Compile Include="IntegraGPeconnect.cs" />
+    <Compile Include="IntegraVentasBandejaDB.cs" />
+    <Compile Include="IntegraVentasBandejaXL.cs" />
+    <Compile Include="IParametros.cs" />
+    <Compile Include="IParametrosDB.cs" />
+    <Compile Include="IParametrosXL .cs" />
+    <Compile Include="BLL\ModelGP.Context.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ModelGP.Context.tt</DependentUpon>
+    </Compile>
+    <Compile Include="BLL\ModelGP.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ModelGP.tt</DependentUpon>
+    </Compile>
+    <Compile Include="BLL\ModelGP.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ModelGP.edmx</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Herramientas\Utiles.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.Config" />
+    <EntityDeploy Include="BLL\ModelGP.edmx">
+      <Generator>EntityModelCodeGenerator</Generator>
+      <LastGenOutput>ModelGP.Designer.cs</LastGenOutput>
+    </EntityDeploy>
+    <None Include="BLL\ModelGP.edmx.diagram">
+      <DependentUpon>ModelGP.edmx</DependentUpon>
+    </None>
+    <EntityDeploy Include="BLL\ModelIntegra.edmx">
+      <Generator>EntityModelCodeGenerator</Generator>
+      <LastGenOutput>ModelIntegra.Designer.cs</LastGenOutput>
+    </EntityDeploy>
+    <None Include="BLL\ModelIntegra.edmx.diagram">
+      <DependentUpon>ModelIntegra.edmx</DependentUpon>
+    </None>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="BLL\ModelGP.Context.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <DependentUpon>ModelGP.edmx</DependentUpon>
+      <LastGenOutput>ModelGP.Context.cs</LastGenOutput>
+    </Content>
+    <Content Include="BLL\ModelGP.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <DependentUpon>ModelGP.edmx</DependentUpon>
+      <LastGenOutput>ModelGP.cs</LastGenOutput>
+    </Content>
+    <Content Include="BLL\ModelIntegra.Context.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <DependentUpon>ModelIntegra.edmx</DependentUpon>
+      <LastGenOutput>ModelIntegra.Context.cs</LastGenOutput>
+    </Content>
+    <Content Include="BLL\ModelIntegra.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <DependentUpon>ModelIntegra.edmx</DependentUpon>
+      <LastGenOutput>ModelIntegra.cs</LastGenOutput>
+    </Content>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
