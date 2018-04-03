@@ -11,7 +11,7 @@ IF DATABASE_PRINCIPAL_ID('rol_integracionesGP') IS NULL
 grant select on dbo.comgp_fnDocStatusPreCondiciones to rol_integracionesGP;
 
 
-use integra50	--integra10 -- 
+use  integra50	--integra10 --
 go
 IF DATABASE_PRINCIPAL_ID('rol_integracionesGP') IS NULL
 	create role rol_integracionesGP;

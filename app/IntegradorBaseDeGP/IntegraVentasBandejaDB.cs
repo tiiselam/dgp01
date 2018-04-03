@@ -178,7 +178,7 @@ namespace IntegradorDeGP
 
         }
 
-        private string IngresaLogFactura(vwIntegracionesVentas integraVentas, taSopHdrIvcInsert sopDoc, string transicion, string msj, string msjLargo)
+        private string IngresaLogFactura(vwIntegracionesVentas integraVentas, short? soptype, string sopnumbe, string transicion, string msj, string msjLargo)
         {
             using (var db = this.getDbContextIntegra())
             {
@@ -189,7 +189,7 @@ namespace IntegradorDeGP
                 }
                 ObjectParameter ID = new ObjectParameter("ID", typeof(int));
 
-                db.sp_LOGINTEGRACIONESInsert(ID, integraVentas.TIPODOCARN, integraVentas.NUMDOCARN, sopDoc.SOPTYPE, sopDoc.SOPNUMBE, transicion, usuarioQueProcesa, msj, msjLargo, 1);
+                db.sp_LOGINTEGRACIONESInsert(ID, integraVentas.TIPODOCARN, integraVentas.NUMDOCARN, soptype, sopnumbe, transicion, usuarioQueProcesa, msj, msjLargo, 1);
 
                 return ID.Value.ToString();
             }
@@ -249,7 +249,8 @@ namespace IntegradorDeGP
 
                             taSopHdrIvcInsert sopDoc = this.IntegraFacturaSOP(item, sTimeStamp);
                             iFacturasIntegradas++;
-                            string idLog = IngresaLogFactura(item, sopDoc, transicion, "Ingresó a GP OK.", string.Empty);
+
+                            string idLog = IngresaLogFactura(item, sopDoc.SOPTYPE, sopDoc.SOPNUMBE, transicion, "OK", string.Empty);
                             OnProgreso(100 / pfi.Count, string.Concat("Pre factura: ", item.NUMDOCARN, " -> Factura GP: ", sopDoc.SOPNUMBE, " Log:", idLog));
                         }
                         else
@@ -280,13 +281,67 @@ namespace IntegradorDeGP
             }
             catch (Exception errorGral)
              {
-                OnProgreso(0, string.Concat("Excepción al procesar la banjeda de la bd de Integraciones. " + errorGral.Message+Environment.NewLine + errorGral?.InnerException?.Message));
+                OnProgreso(0, string.Concat("Excepción al procesar la bandeja de la bd de Integraciones. " + errorGral.Message+Environment.NewLine + errorGral?.InnerException?.Message));
             }
         }
 
         /// <summary>
         /// Revisa las prefacturas a integrar desde la base de datos.
-        /// Posibles transiciones: ENVIAR_A_GP
+        /// Posibles transiciones: CONTABILIZA_FACTURA_EN_GP
+        /// </summary>
+        /// <param name="docStatus"></param>
+        /// <param name="transicion"></param>
+        public void ProcesaBandejaDBActualizaStatus(string docStatus, string transicion)
+        {
+
+            try
+            {
+                var pfi = getPrefacturasAIntegrar(docStatus);
+                int iFacturasIntegradas = 0;
+
+                string sTimeStamp = System.DateTime.Now.ToString("yyMMddHHmmssfff");
+                foreach (var item in pfi)
+                {
+                    try
+                    {
+                        var proximoStatus = getSiguienteStatus(item.TIPODOCARN, item.NUMDOCARN, transicion).First();
+                        if (proximoStatus.transicionFactible == 1)
+                        {
+                            iFacturasIntegradas++;
+
+                            string idLog = IngresaLogFactura(item, item.SOPTYPE_GP, item.NUMDOCGP, transicion, "OK", string.Empty);
+                            OnProgreso(100 / pfi.Count, string.Concat("Pre factura: ", item.NUMDOCARN, " -> Factura GP: ", item.NUMDOCGP, " Log:", idLog));
+                        }
+                        else
+                            OnProgreso(100 / pfi.Count, string.Concat("Pre factura: ", item.NUMDOCARN, " -> El documento continúa ", docStatus, " ", proximoStatus.mensaje));
+
+                    }
+                    catch (SqlException se)
+                    {
+                        OnProgreso(100 / pfi.Count, string.Concat("Pre factura: ", item.NUMDOCARN, " Excepción al ingresar el log. " + se.Message, Environment.NewLine, se?.InnerException?.Message));
+
+                    }
+                    catch (Exception ee)
+                    {
+                        //IngresaLogFactura(item, transicion, "No se pudo integrar la pre factura. Revise el mensaje de error.", string.Concat(ee.Message, Environment.NewLine, ee?.InnerException?.Message));
+                        OnProgreso(100 / pfi.Count, string.Concat("Pre factura: ", item.NUMDOCARN, " Excepción desconocida. No se pudo actualizar el status del documento GP. " + ee.Message, Environment.NewLine, ee?.InnerException?.Message));
+
+                    }
+                }
+                OnProgreso(100, "----------------------------------------------");
+                OnProgreso(100, "Nuevos documentos actualizados: " + iFacturasIntegradas.ToString());
+                OnProgreso(100, "Número de documentos con error: " + (pfi.Count - iFacturasIntegradas).ToString());
+                OnProgreso(100, "Total de documentos leídos: " + pfi.Count.ToString());
+
+            }
+            catch (Exception errorGral)
+            {
+                OnProgreso(0, string.Concat("Excepción al procesar la bandeja de la bd de Integraciones para actualizar el status de documentos GP. " + errorGral.Message + Environment.NewLine + errorGral?.InnerException?.Message));
+            }
+        }
+        /// <summary>
+        /// Revisa las prefacturas a integrar desde la base de datos.
+        /// Posibles transiciones: ELIMINA_FACTURA_EN_GP, ANULA_FACTURA_RM_EN_GP
         /// </summary>
         /// <param name="idLog"></param>
         /// <param name="docStatus"></param>
