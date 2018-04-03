@@ -1,3 +1,80 @@
+select 
+viv.*
+from compuertagp.vwIntegracionesVentas viv
+
+----------------------------------------------------------------------------------------------------------------------------
+--Para reintegrar facturas que todavía están en lote en GP.
+select *
+from tst12.dbo.comgp_fnDocStatusPreCondiciones(3, 'FV A0088-T0000042', 'ELIMINA_FACTURA_EN_GP')
+
+SELECT cumplePreCondiciones, msjPreCondiciones FROM tst12.dbo.comgp_fnDocStatusPreCondiciones(3, 'FV A0088-T00x00042', 'ELIMINA_FACTURA_EN_GP') 
+
+-------------------------------------------------------------------------------------------------------------------
+--Para reintegrar facturas que fueron contabilizads en GP
+--1. cambiar el status de INTEGRADO a CONTABILIZADO
+select pc.*, 
+viv.*
+from compuertagp.vwIntegracionesVentas viv
+	CROSS apply pro12.dbo.comgp_fnDocStatusPreCondiciones(viv.tipodocgp, viv.numdocgp, 'CONTABILIZA_FACTURA_EN_GP') pc
+where 
+viv.docstatus = 'INTEGRADO'
+and viv.numdocarn in ('15','16','17','18','19')
+
+declare @r int; 
+exec compuertagp.[sp_LOGINTEGRACIONESInsert] @r, 1, 15, 3, 'FV A0001-T0000016', 'CONTABILIZA_FACTURA_EN_GP', 'sa', 'Contabilizado en GP', 'Correcto. La factura está contabilizada en GP.', 1
+exec compuertagp.[sp_LOGINTEGRACIONESInsert] @r, 1, 16, 3, 'FV A0001-T0000017', 'CONTABILIZA_FACTURA_EN_GP', 'sa', 'Contabilizado en GP', 'Correcto. La factura está contabilizada en GP.', 1
+exec compuertagp.[sp_LOGINTEGRACIONESInsert] @r, 1, 17, 3, 'FV A0001-T0000018', 'CONTABILIZA_FACTURA_EN_GP', 'sa', 'Contabilizado en GP', 'Correcto. La factura está contabilizada en GP.', 1
+exec compuertagp.[sp_LOGINTEGRACIONESInsert] @r, 1, 18, 3, 'FV A0001-T0000019', 'CONTABILIZA_FACTURA_EN_GP', 'sa', 'Contabilizado en GP', 'Correcto. La factura está contabilizada en GP.', 1
+exec compuertagp.[sp_LOGINTEGRACIONESInsert] @r, 1, 19, 3, 'FV A0001-T0000020', 'CONTABILIZA_FACTURA_EN_GP', 'sa', 'Contabilizado en GP', 'Correcto. La factura está contabilizada en GP.', 1
+
+--2. cambiar el status de CONTABILIZADO a LISTO
+select pc.*, viv.*
+from compuertagp.vwIntegracionesVentas viv
+	outer apply pro12.dbo.comgp_fnDocStatusPreCondiciones(viv.tipodocgp, viv.numdocgp, 'ANULA_FACTURA_RM_EN_GP') pc
+where viv.docstatus = 'CONTABILIZADO'
+
+declare @r int; 
+exec compuertagp.[sp_LOGINTEGRACIONESInsert] @r, 1, '15', NULL, NULL, 'ANULA_FACTURA_RM_EN_GP', 'sa', 'Habilitado para re-integrarse a GP', 'Correcto. La factura está anulada en GP.', 1
+exec compuertagp.[sp_LOGINTEGRACIONESInsert] @r, 1, '16', NULL, NULL, 'ANULA_FACTURA_RM_EN_GP', 'sa', 'Habilitado para re-integrarse a GP', 'Correcto. La factura está anulada en GP.', 1
+exec compuertagp.[sp_LOGINTEGRACIONESInsert] @r, 1, '17', NULL, NULL, 'ANULA_FACTURA_RM_EN_GP', 'sa', 'Habilitado para re-integrarse a GP', 'Correcto. La factura está anulada en GP.', 1
+exec compuertagp.[sp_LOGINTEGRACIONESInsert] @r, 1, '18', NULL, NULL, 'ANULA_FACTURA_RM_EN_GP', 'sa', 'Habilitado para re-integrarse a GP', 'Correcto. La factura está anulada en GP.', 1
+exec compuertagp.[sp_LOGINTEGRACIONESInsert] @r, 1, '19', NULL, NULL, 'ANULA_FACTURA_RM_EN_GP', 'sa', 'Habilitado para re-integrarse a GP', 'Correcto. La factura está anulada en GP.', 1
+
+
+--------------------------------------------------------------------------------------------------------------------
+
+	--@ID int = NULL OUTPUT,
+	--@TIPODOCARN smallint,
+	--@NUMDOCARN varchar(20),
+	--@TIPODOCGP smallint = NULL,
+	--@NUMDOCGP varchar(20) = NULL,
+	--@TRANSICION VARCHAR(50),
+	--@USUARIO varchar(35),
+	--@MENSAJE varchar(150),
+	--@MSJPRECONDICIONES varchar(MAX) = NULL,
+	--@CUMPLEPRECONDICIONES smallint = 1
+
+
+select *
+--UPDATE p set docid_gp = 'FV A0001'
+from compuertagp.PREFACTURACAB p
+order by 2
+
+select *
+from compuertagp.vwIntegracionesVentas
+
+select *
+--update l set DOCSTATUS = 'INTEGRADO'
+from compuertagp.logintegraciones l
+where numdocarn = '15'
+--and ESACTUAL = 1
+order by tipodocarn, numdocarn, fechahora
+
+select *
+from tst12.dbo.vwSopFacturasCabezaTH
+where sopnumbe like 'FV A0088-T000002%'
+
+------------------------------------------------------------------------------
 -------------------
 --sp_columns LOGINTEGRACIONES
 select *
@@ -24,78 +101,3 @@ SELECT tipodocarn, numdocarn, tipodocgp, numdocgp, docstatus,1, usuario, fechaho
 FROM compuertagp.logintegraciones
 --where NUMDOCARN = '00000001'
 ----------------------------------------------------------------------------------------------------------------------------
-
-----------------------------------------------------------------------------------------------------------------------------
---Para reintegrar facturas
-select *
-from tst12.dbo.comgp_fnDocStatusPreCondiciones(3, 'FV A0088-T0000042', 'ELIMINA_FACTURA_EN_GP')
-
-SELECT cumplePreCondiciones, msjPreCondiciones FROM tst12.dbo.comgp_fnDocStatusPreCondiciones(3, 'FV A0088-T00x00042', 'ELIMINA_FACTURA_EN_GP') 
-
-declare @idLog int;
-EXEC compuertagp.[sp_LOGINTEGRACIONESInsert] @idLog out, 1, '00000001', null, null,'ELIMINA_FACTURA_EN_GP', 'jcf', 'Se puede reintegrar a GP', 'OK. La factura no existe en GP.' , 1
-EXEC compuertagp.[sp_LOGINTEGRACIONESInsert] @idLog out, 1, '00000002', null, null,'ELIMINA_FACTURA_EN_GP', 'jcf', 'Se puede reintegrar a GP', 'OK. La factura no existe en GP.' , 1
-EXEC compuertagp.[sp_LOGINTEGRACIONESInsert] @idLog out, 1, '00000003', null, null,'ELIMINA_FACTURA_EN_GP', 'jcf', 'Se puede reintegrar a GP', 'OK. La factura no existe en GP.' , 1
-EXEC compuertagp.[sp_LOGINTEGRACIONESInsert] @idLog out, 1, '11', null, null,'ELIMINA_FACTURA_EN_GP', 'jcf', 'Se puede reintegrar a GP', 'OK. La factura no existe en GP.' , 1
-EXEC compuertagp.[sp_LOGINTEGRACIONESInsert] @idLog out, 1, '12', null, null,'ELIMINA_FACTURA_EN_GP', 'jcf', 'Se puede reintegrar a GP', 'OK. La factura no existe en GP.' , 1
-
-	--@ID int = NULL OUTPUT,
-	--@TIPODOCARN smallint,
-	--@NUMDOCARN varchar(20),
-	--@TIPODOCGP smallint = NULL,
-	--@NUMDOCGP varchar(20) = NULL,
-	--@TRANSICION VARCHAR(50),
-	--@USUARIO varchar(35),
-	--@MENSAJE varchar(150),
-	--@MSJPRECONDICIONES varchar(MAX) = NULL,
-	--@CUMPLEPRECONDICIONES smallint = 1
-
-select *
---UPDATE p set docid_gp = 'FV A0001'
-from compuertagp.PREFACTURACAB p
-order by 2
-
-select *
-from compuertagp.vwIntegracionesVentas
-
-select *
---update l set DOCSTATUS = 'INTEGRADO'
-from compuertagp.logintegraciones l
-where numdocarn = '8'
---and ESACTUAL = 1
-order by tipodocarn, numdocarn, fechahora
-
-select *
-from tst12.dbo.vwSopFacturasCabezaTH
-where sopnumbe like 'FV A0088-T000002%'
-
-------------------------------------------------------------------------------
---Datos de prueba
-exec compuertagp.sp_PREFACTURACABInsert 1, '00000001', '000001', '1/1/18', 'guía 1', 'jcf';
-declare @numlinea int;
-exec compuertagp.sp_PREFACTURADETInsert @numlinea out, '00000001', 1, 'WP621020', 'item1', 'UND', 3, 0;
-exec compuertagp.sp_PREFACTURADETInsert @numlinea out, '00000001', 1, 'WP621020-T', 'item2', 'UND', 1, 0;
-
-
-exec compuertagp.sp_PREFACTURACABInsert 1, '00000002', '000001', '2/1/18', 'guía 2', 'jcf';
-declare @numlinea int;
-exec compuertagp.sp_PREFACTURADETInsert @numlinea out, '00000002', 1, 'WP621020', 'item1', 'UND', 1, 0;
-exec compuertagp.sp_PREFACTURADETInsert @numlinea out , '00000002', 1, 'WP621020-T', 'item2', 'UND', 2, 0;
-
-exec compuertagp.sp_PREFACTURACABInsert 1, '00000003', '000001', '2/3/18', 'guía de remisión 3', 'jcf';
-declare @numlinea int;
-exec compuertagp.sp_PREFACTURADETInsert @numlinea out, '00000003', 1, 'WP621020', 'item1', 'UND', 3, 0;
-exec compuertagp.sp_PREFACTURADETInsert @numlinea out , '00000003', 1, 'WP621020-T', 'item2', 'UND', 3, 0;
-
-
---@NUMLINEA int = NULL OUTPUT,
---	@PREFACTURACAB_NUMERODOC varchar(20),
---	@PREFACTURACAB_TIPODOC smallint,
---	@IDITEM varchar(30),
---	@DESCRIPCION varchar(100),
---	@UDM varchar(9),
---	@CANTIDAD numeric(19,5),
---	@PRECIO numeric(19,5)
-----------------------------------------------------------------------------------
-
-

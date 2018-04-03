@@ -7,7 +7,6 @@ GO
 
 --Propósito. Ingresa la cabecera de una pre factura
 --01/03/18 jcf Creación
---12/03/18 jcf Agrega parámetro tipo de contribuyente @RESP_TYPE
 --
 CREATE PROCEDURE compuertagp.[sp_PREFACTURACABInsert]
 (
@@ -16,8 +15,7 @@ CREATE PROCEDURE compuertagp.[sp_PREFACTURACABInsert]
 	@IDCLIENTE varchar(15),
 	@FECHADOC datetime,
 	@OBSERVACIONES varchar(30),
-	@USUARIO varchar(35),
-	@RESP_TYPE VARCHAR(15)
+	@USUARIO varchar(35)
 )
 AS
 	SET NOCOUNT ON
@@ -40,7 +38,7 @@ AS
 			@IDCLIENTE,
 			@FECHADOC,
 			@OBSERVACIONES,
-			@RESP_TYPE,
+			'FV A0001',
 			3
 		)
 
@@ -52,7 +50,6 @@ AS
 		print ERROR_NUMBER() + ' ' + ERROR_MESSAGE();  
 		THROW;
 	end catch;
-GO
 
 --|--------------------------------------------------------------------------------
 --| [sp_PREFACTURACABUpdate] - Update Procedure Script for PREFACTURACAB
