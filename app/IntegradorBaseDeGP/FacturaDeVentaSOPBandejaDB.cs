@@ -63,25 +63,25 @@ namespace IntegradorDeGP
             return sn.GetNextSopNumber(soptype, docId, parametrosDB.ConnStringTarget);
         }
 
-        public void armaFacturaCaEconn(vwIntegracionesVentas preFacturasIntegCab, IList<vwPreFacturas> preFacturasDet, string sTimeStamp) 
+        public void armaFacturaCaEconn(vwIntegracionesVentas preFacturasIntegCab, IList<vwPreFacturas> preFacturasDet, string sTimeStamp, string tipoContribuyente) 
         {
             try
             {
                 short soptype = preFacturasIntegCab.SOPTYPE_GP ?? 3;
-
-                var docId = parametrosDB.IdsDocumento.Where(x=>x.Key == preFacturasIntegCab.DOCID_GP).First() ;
+                
+                var docId = parametrosDB.IdsDocumento.Where(x=>x.Key == tipoContribuyente)?.First() ;
 
                 if (docId.Equals(null))
-                    throw new InvalidOperationException("No existe configurado el Id de documento (DOCID) "+ preFacturasIntegCab.DOCID_GP + " [FacturaDeVentaSOPBandejaDB.armaFacturaCaEconn]");
+                    throw new InvalidOperationException(string.Concat("No existe configurado el tipo de contribuyente ", tipoContribuyente ," en el archivo de parámetros. [FacturaDeVentaSOPBandejaDB.armaFacturaCaEconn]"));
 
-                string sopnumbe = getNextSopNumbe(soptype, docId.Value);
+                string sopnumbe = getNextSopNumbe(soptype, docId?.Value);
 
                 facturaSopCa.CREATETAXES = 1;   //1: crear impuestos automáticamente
                 facturaSopCa.DEFPRICING = 1;    //1: calcular automáticamente; 0:se debe indicar el precio unitario
 
                 facturaSopCa.BACHNUMB = sTimeStamp;
                 facturaSopCa.SOPTYPE = soptype;
-                facturaSopCa.DOCID = docId.Value;
+                facturaSopCa.DOCID = docId?.Value;
                 facturaSopCa.SOPNUMBE = sopnumbe;
                 facturaSopCa.DOCDATE = preFacturasIntegCab.FECHADOC.ToString(parametrosDB.FormatoFechaDB);
                 facturaSopCa.CUSTNMBR = preFacturasIntegCab.IDCLIENTE;
@@ -133,9 +133,9 @@ namespace IntegradorDeGP
             //}
         }
 
-        public void preparaFacturaSOP(vwIntegracionesVentas pfIntegraCab, IList<vwPreFacturas> preFacturasDet, string sTimeStamp)
+        public void preparaFacturaSOP(vwIntegracionesVentas pfIntegraCab, IList<vwPreFacturas> preFacturasDet, string sTimeStamp, string tipoContribuyente)
         {
-            armaFacturaCaEconn(pfIntegraCab, preFacturasDet, sTimeStamp);
+            armaFacturaCaEconn(pfIntegraCab, preFacturasDet, sTimeStamp, tipoContribuyente);
 
             facturaSop.taSopHdrIvcInsert = facturaSopCa;
 

@@ -1,4 +1,4 @@
-﻿// T4 code generation is enabled for model 'C:\jcTii\Desarrollo\STD_IntegradorDeGP\IntegradorGeneralGP\IntegradorBaseDeGP\BLL\ModelGP.edmx'. 
+﻿// T4 code generation is enabled for model 'C:\jcTii\Desarrollo\STD_IntegraEconnectGP\dgp01\app\IntegradorBaseDeGP\BLL\ModelGP.edmx'. 
 // To enable legacy code generation, change the value of the 'Code Generation Strategy' designer
 // property to 'Legacy ObjectContext'. This property is available in the Properties Window when the model
 // is open in the designer.

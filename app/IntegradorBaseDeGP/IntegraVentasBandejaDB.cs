@@ -110,6 +110,20 @@ namespace IntegradorDeGP
             }
         }
 
+        private string LocArgentina_GetTipoContribuyente(string custnmbr)
+        {
+            using (var db = this.getDbContextGP())
+            {
+                // verificar la conexión con el servidor de bd
+                if (!this.probarConexionDBGP())
+                {
+                    throw new InvalidOperationException("No se pudo establecer la conexión con el servidor al tratar de leer los datos del cliente " + custnmbr);
+                }
+
+                var datos = db.vwRmClientes.AsQueryable();
+                return datos.Where(m => m.custnmbr == custnmbr)?.Select(x => x.RESP_TYPE)?.First() ;
+            }
+        }
         //verifica si transición es válida
         private IList<docGetSiguienteStatus_Result> getSiguienteStatus(short tipoDoc, string numDoc, string transicion)
         {
@@ -170,7 +184,8 @@ namespace IntegradorDeGP
             eConnectMethods eConnObject = new eConnectMethods();
 
             var dpf = getPrefacturasDetalle(preFacturasAIntegrar.NUMDOCARN, preFacturasAIntegrar.TIPODOCARN);
-            documentoSOP.preparaFacturaSOP(preFacturasAIntegrar, dpf, sTimeStamp);
+            string tipoContribuyente = LocArgentina_GetTipoContribuyente(preFacturasAIntegrar.IDCLIENTE);
+            documentoSOP.preparaFacturaSOP(preFacturasAIntegrar, dpf, sTimeStamp, tipoContribuyente);
             docEConnectSOP.SOPTransactionType = new SOPTransactionType[] { documentoSOP.FacturaSop };
             serializa(docEConnectSOP);
             eConnResult = eConnObject.CreateTransactionEntity(connectionStringDestino, this.SDocXml);

@@ -27,6 +27,7 @@ namespace IntegradorDeGP.BLL
             throw new UnintentionalCodeFirstException();
         }
     
+        public virtual DbSet<vwRmClientes> vwRmClientes { get; set; }
     
         [DbFunction("DynamicsGPEntities", "comgp_fnDocStatusPreCondiciones")]
         public virtual IQueryable<comgp_fnDocStatusPreCondiciones_Result> comgp_fnDocStatusPreCondiciones(Nullable<short> tIPODOCGP, string nUMDOCGP, string tRANSICION)
