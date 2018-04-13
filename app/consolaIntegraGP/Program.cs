@@ -34,6 +34,8 @@ namespace consolaIntegraGP
                 IntegraVentasBandejaDB bandejaDB = new IntegraVentasBandejaDB(paramDB, Environment.UserName);
                 bandejaDB.eventoProgreso += muestraError;   // BandejaDB_eventoProgreso;
                 //bandejaDB.ProcesaBandejaDB("LISTO", "ENVIAR_A_GP");
+
+                //actualiza el status de los integrados
                 bandejaDB.ProcesaBandejaDBActualizaStatus("INTEGRADO", "CONTABILIZA_FACTURA_EN_GP");
 
 

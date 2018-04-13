@@ -12,7 +12,7 @@ GO
 --ANULA_FACTURA_RM_EN_GP
 --ANULA_FACTURA_SOP_EN_GP
 --
-CREATE function dbo.comgp_fnDocStatusPreCondiciones(@TIPODOCGP smallint, @NUMDOCGP varchar(20) , @TRANSICION VARCHAR(50))
+create function dbo.comgp_fnDocStatusPreCondiciones(@TIPODOCGP smallint, @NUMDOCGP varchar(20) , @TRANSICION VARCHAR(50))
 returns table
 --Propósito. Obtiene el status destino correspondiente a la transicion del parámetro
 --Precondiciones. Ejecute fnDocCumplePreCondiciones para saber si cumple los requisitos de la transición en la BD de la compañía destino
@@ -60,7 +60,7 @@ return(
 						case when isnull(fhi.pstgstus, -1) = -1 then
 							'Incorrecto. La factura no existe en GP'
 						else 
-							'Incorrecto. La factura está pendiente de contabilizar. Contabilice la factura y vuelva a intentar.'
+							'La factura está en lote. Contabilice la factura y vuelva a intentar.'
 						end
 					end
 			else 'No se puede validar la transición ' + @TRANSICION

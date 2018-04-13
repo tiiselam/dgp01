@@ -10,10 +10,12 @@ warning 6002: The table/view 'TST12.dbo.vwRmClientes' does not have a primary ke
         <EntityType Name="vwRmClientes">
           <Key>
             <PropertyRef Name="custnmbr" />
+            
+            
           </Key>
           <Property Name="custnmbr" Type="char" MaxLength="15" Nullable="false" />
           <Property Name="custname" Type="char" MaxLength="65" Nullable="false" />
-          <Property Name="RESP_TYPE" Type="char" MaxLength="3" />
+          <Property Name="RESP_TYPE" Type="char" MaxLength="3" Nullable="false" />
         </EntityType>
         <Function Name="comgp_fnDocStatusPreCondiciones" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="true" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="TIPODOCGP" Type="smallint" Mode="In" />
@@ -59,7 +61,7 @@ warning 6002: The table/view 'TST12.dbo.vwRmClientes' does not have a primary ke
           </Key>
           <Property Name="custnmbr" Type="String" Nullable="false" MaxLength="15" FixedLength="true" Unicode="false" />
           <Property Name="custname" Type="String" Nullable="false" MaxLength="65" FixedLength="true" Unicode="false" />
-          <Property Name="RESP_TYPE" Type="String" MaxLength="3" FixedLength="true" Unicode="false" />
+          <Property Name="RESP_TYPE" Type="String" MaxLength="3" FixedLength="true" Unicode="false" Nullable="false" />
         </EntityType>
       </Schema>
     </edmx:ConceptualModels>

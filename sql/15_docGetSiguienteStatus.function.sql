@@ -15,7 +15,7 @@ GO
 --ANULA_FACTURA_RM_EN_GP
 --ANULA_FACTURA_SOP_EN_GP
 --
-CREATE function compuertagp.docGetSiguienteStatus(	@TIPODOCARN smallint, @NUMDOCARN varchar(20), @TRANSICION VARCHAR(50))
+create function compuertagp.docGetSiguienteStatus(	@TIPODOCARN smallint, @NUMDOCARN varchar(20), @TRANSICION VARCHAR(50))
 returns table
 --Propósito. Obtiene el status destino correspondiente a la transicion del parámetro
 --Precondiciones. Ejecute fnDocCumplePreCondiciones para saber si cumple los requisitos de la transición en la BD de la compañía destino

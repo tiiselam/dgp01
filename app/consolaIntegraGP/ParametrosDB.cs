@@ -12,7 +12,9 @@ namespace consolaIntegraGP
     {
         private string idbd;
         private string nombreBd;
-        private string metadata;
+        private string metadataIntegra;
+        private string metadataGP;
+        private string metadataUIIntegra;
 
         public string Idbd
         {
@@ -40,16 +42,51 @@ namespace consolaIntegraGP
             }
         }
 
-        public string Metadata
+        /// <summary>
+        /// metadata de la bd Integra del servicio de integración
+        /// </summary>
+        public string MetadataIntegra
         {
             get
             {
-                return metadata;
+                return metadataIntegra;
             }
 
             set
             {
-                metadata = value;
+                metadataIntegra = value;
+            }
+        }
+
+        /// <summary>
+        /// metadata de la bd GP del servicio de integración
+        /// </summary>
+        public string MetadataGP
+        {
+            get
+            {
+                return metadataGP;
+            }
+
+            set
+            {
+                metadataGP = value;
+            }
+        }
+
+        /// <summary>
+        /// metadata de la bd Integra de la aplicación winForms
+        /// </summary>
+        public string MetadataUIIntegra
+        {
+            get
+            {
+                return metadataUIIntegra;
+            }
+
+            set
+            {
+                metadataUIIntegra = value;
             }
         }
     }
@@ -63,6 +100,7 @@ namespace consolaIntegraGP
         private string _seguridadIntegrada = "0";
         private string _usuarioSql = "";
         private string _passwordSql = "";
+        private string connStringSourceEFUI = string.Empty;
         private string connectionStringSourceEF = string.Empty;
         private string connectionStringTargetEF = string.Empty;
         private string connStringSource = string.Empty;
@@ -93,7 +131,9 @@ namespace consolaIntegraGP
                     {
                         Idbd = empresaNode.Attributes["bd"].Value,
                         NombreBd = empresaNode.Attributes["nombre"].Value,
-                        Metadata = empresaNode.Attributes["metadataIGP"].Value
+                        MetadataIntegra = empresaNode.Attributes["metadataIntegra"].Value,
+                        MetadataGP = empresaNode.Attributes["metadataGP"].Value,
+                        MetadataUIIntegra = empresaNode.Attributes["metadataUI"].Value
                     });
                 }
 
@@ -116,26 +156,32 @@ namespace consolaIntegraGP
             targetGPDB = elemento.SelectSingleNode("//compannia[@bd='" + IdCompannia + "']/TargetGPDB/text()").Value;
             if (seguridadIntegrada)
             {
-                connectionStringSourceEF = this._empresas[idxEmpresa].Metadata + "provider connection string='data source=" + _servidor + "; initial catalog = " + IdCompannia + "; integrated security = True; MultipleActiveResultSets = True; App = EntityFramework'";
-                connectionStringTargetEF = this._empresas[idxEmpresa].Metadata + "provider connection string='data source=" + _servidor + "; initial catalog = " + targetGPDB + "; integrated security = True; MultipleActiveResultSets = True; App = EntityFramework'";
+                connectionStringSourceEF = this._empresas[idxEmpresa].MetadataIntegra + "provider connection string='data source=" + _servidor + "; initial catalog = " + IdCompannia + "; integrated security = True; MultipleActiveResultSets = True; App = EntityFramework'";
+                connectionStringTargetEF = this._empresas[idxEmpresa].MetadataGP + "provider connection string='data source=" + _servidor + "; initial catalog = " + targetGPDB + "; integrated security = True; MultipleActiveResultSets = True; App = EntityFramework'";
                 connStringSource = "Initial Catalog=" + IdCompannia + ";Data Source=" + _servidor + ";Integrated Security=SSPI";
                 connStringTarget = "Initial Catalog=" + targetGPDB + ";Data Source=" + _servidor + ";Integrated Security=SSPI";
+                connStringSourceEFUI = this._empresas[idxEmpresa].MetadataUIIntegra + "provider connection string='data source=" + _servidor + "; initial catalog = " + IdCompannia + "; integrated security = True; MultipleActiveResultSets = True; App = EntityFramework'"; 
             }
             else
             {
-                connectionStringSourceEF = this._empresas[idxEmpresa].Metadata + "provider connection string='data source=" + _servidor + ";initial catalog=" + IdCompannia + ";user id=" + _usuarioSql + ";Password=" + _passwordSql + ";integrated security=False; MultipleActiveResultSets=True;App=EntityFramework'";
-                connectionStringTargetEF = this._empresas[idxEmpresa].Metadata + "provider connection string='data source=" + _servidor + ";initial catalog=" + targetGPDB + ";user id=" + _usuarioSql + ";Password=" + _passwordSql + ";integrated security=False; MultipleActiveResultSets=True;App=EntityFramework'";
+                connectionStringSourceEF = this._empresas[idxEmpresa].MetadataIntegra + "provider connection string='data source=" + _servidor + ";initial catalog=" + IdCompannia + ";user id=" + _usuarioSql + ";Password=" + _passwordSql + ";integrated security=False; MultipleActiveResultSets=True;App=EntityFramework'";
+                connectionStringTargetEF = this._empresas[idxEmpresa].MetadataGP + "provider connection string='data source=" + _servidor + ";initial catalog=" + targetGPDB + ";user id=" + _usuarioSql + ";Password=" + _passwordSql + ";integrated security=False; MultipleActiveResultSets=True;App=EntityFramework'";
                 connStringSource = "User ID=" + _usuarioSql + ";Password=" + _passwordSql + ";Initial Catalog=" + IdCompannia + ";Data Source=" + _servidor;
                 connStringTarget = "User ID=" + _usuarioSql + ";Password=" + _passwordSql + ";Initial Catalog=" + targetGPDB + ";Data Source=" + _servidor;
+                connStringSourceEFUI = this._empresas[idxEmpresa].MetadataUIIntegra + "provider connection string='data source=" + _servidor + "; initial catalog = " + IdCompannia + ";user id=" + _usuarioSql + ";Password=" + _passwordSql + ";integrated security=False; MultipleActiveResultSets=True;App=EntityFramework'";
             }
 
             RutaLog = elemento.SelectSingleNode("//compannia[@bd='" + IdCompannia + "']/RutaLog/text()").Value;
-
             XmlNodeList idsDocumentoSOP = listaParametros.DocumentElement.SelectNodes("/listaParametros/compannia[@bd='" + IdCompannia + "']/idsDocumentoSOP");
-            idsDocumento = new Dictionary<string, string>();
+            IdsDocumento = new Dictionary<string, string>();
             foreach (XmlNode n in idsDocumentoSOP)
             {
-                idsDocumento.Add(n.Attributes["idAriane"].Value, n.Attributes["idGP"].Value);
+                try
+                {
+                    IdsDocumento.Add(n.Attributes["idAriane"].Value, n.Attributes["idGP"].Value);
+                }
+                catch
+                { }
             }
 
         }
@@ -274,6 +320,19 @@ namespace consolaIntegraGP
             set
             {
                 rutaLog = value;
+            }
+        }
+
+        public string ConnStringSourceEFUI
+        {
+            get
+            {
+                return connStringSourceEFUI;
+            }
+
+            set
+            {
+                connStringSourceEFUI = value;
             }
         }
 

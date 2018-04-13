@@ -69,19 +69,21 @@ namespace IntegradorDeGP
             {
                 short soptype = preFacturasIntegCab.SOPTYPE_GP ?? 3;
                 
-                var docId = parametrosDB.IdsDocumento.Where(x=>x.Key == tipoContribuyente)?.First() ;
+                //var docId = parametrosDB.IdsDocumento.Where(x=>x.Key.CompareTo(tipoContribuyente)==0)?.First() ;
+                string docId = string.Empty;
+                parametrosDB.IdsDocumento.TryGetValue(tipoContribuyente.Trim(), out docId);
 
-                if (docId.Equals(null))
+                if (string.IsNullOrEmpty( docId))
                     throw new InvalidOperationException(string.Concat("No existe configurado el tipo de contribuyente ", tipoContribuyente ," en el archivo de parámetros. [FacturaDeVentaSOPBandejaDB.armaFacturaCaEconn]"));
 
-                string sopnumbe = getNextSopNumbe(soptype, docId?.Value);
+                string sopnumbe = getNextSopNumbe(soptype, docId);
 
                 facturaSopCa.CREATETAXES = 1;   //1: crear impuestos automáticamente
                 facturaSopCa.DEFPRICING = 1;    //1: calcular automáticamente; 0:se debe indicar el precio unitario
 
                 facturaSopCa.BACHNUMB = sTimeStamp;
                 facturaSopCa.SOPTYPE = soptype;
-                facturaSopCa.DOCID = docId?.Value;
+                facturaSopCa.DOCID = docId;
                 facturaSopCa.SOPNUMBE = sopnumbe;
                 facturaSopCa.DOCDATE = preFacturasIntegCab.FECHADOC.ToString(parametrosDB.FormatoFechaDB);
                 facturaSopCa.CUSTNMBR = preFacturasIntegCab.IDCLIENTE;
