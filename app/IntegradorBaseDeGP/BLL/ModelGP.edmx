@@ -4,7 +4,19 @@
   <edmx:Runtime>
     <!-- SSDL content -->
     <edmx:StorageModels>
-      <Schema Namespace="ModelGP.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+    <Schema Namespace="ModelGP.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <!--Errors Found During Generation:
+warning 6002: The table/view 'TST12.dbo.vwRmClientes' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+        <EntityType Name="vwRmClientes">
+          <Key>
+            <PropertyRef Name="custnmbr" />
+            
+            
+          </Key>
+          <Property Name="custnmbr" Type="char" MaxLength="15" Nullable="false" />
+          <Property Name="custname" Type="char" MaxLength="65" Nullable="false" />
+          <Property Name="RESP_TYPE" Type="char" MaxLength="3" Nullable="false" />
+        </EntityType>
         <Function Name="comgp_fnDocStatusPreCondiciones" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="true" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="TIPODOCGP" Type="smallint" Mode="In" />
           <Parameter Name="NUMDOCGP" Type="varchar" Mode="In" />
@@ -13,14 +25,21 @@
             <CollectionType>
               <RowType>
                 <Property Name="cumplePreCondiciones" Type="int" Nullable="false" />
-                <Property Name="msjPreCondiciones" Type="varchar" MaxLength="84" />
+                <Property Name="msjPreCondiciones" Type="varchar" MaxLength="98" />
               </RowType>
             </CollectionType>
           </ReturnType>
         </Function>
-        <EntityContainer Name="ModelGPStoreContainer" />
-      </Schema>
-    </edmx:StorageModels>
+        <EntityContainer Name="ModelGPStoreContainer">
+          <EntitySet Name="vwRmClientes" EntityType="Self.vwRmClientes" store:Type="Views" store:Schema="dbo">
+            <DefiningQuery>SELECT 
+    [vwRmClientes].[custnmbr] AS [custnmbr], 
+    [vwRmClientes].[custname] AS [custname], 
+    [vwRmClientes].[RESP_TYPE] AS [RESP_TYPE]
+    FROM [dbo].[vwRmClientes] AS [vwRmClientes]</DefiningQuery>
+          </EntitySet>
+        </EntityContainer>
+      </Schema></edmx:StorageModels>
     <!-- CSDL content -->
     <edmx:ConceptualModels>
       <Schema Namespace="ModelGP" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
@@ -34,7 +53,16 @@
             <Parameter Name="NUMDOCGP" Mode="In" Type="String" />
             <Parameter Name="TRANSICION" Mode="In" Type="String" />
           </FunctionImport>
+          <EntitySet Name="vwRmClientes" EntityType="ModelGP.vwRmClientes" />
         </EntityContainer>
+        <EntityType Name="vwRmClientes">
+          <Key>
+            <PropertyRef Name="custnmbr" />
+          </Key>
+          <Property Name="custnmbr" Type="String" Nullable="false" MaxLength="15" FixedLength="true" Unicode="false" />
+          <Property Name="custname" Type="String" Nullable="false" MaxLength="65" FixedLength="true" Unicode="false" />
+          <Property Name="RESP_TYPE" Type="String" MaxLength="3" FixedLength="true" Unicode="false" Nullable="false" />
+        </EntityType>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -49,6 +77,15 @@
               </ComplexTypeMapping>
             </ResultMapping>
           </FunctionImportMapping>
+          <EntitySetMapping Name="vwRmClientes">
+            <EntityTypeMapping TypeName="ModelGP.vwRmClientes">
+              <MappingFragment StoreEntitySet="vwRmClientes">
+                <ScalarProperty Name="RESP_TYPE" ColumnName="RESP_TYPE" />
+                <ScalarProperty Name="custname" ColumnName="custname" />
+                <ScalarProperty Name="custnmbr" ColumnName="custnmbr" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
         </EntityContainerMapping>
       </Mapping>
     </edmx:Mappings>

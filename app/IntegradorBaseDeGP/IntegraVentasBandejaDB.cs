@@ -16,14 +16,14 @@ namespace IntegradorDeGP
     public class IntegraVentasBandejaDB : IntegraGPeconnect
     {
         IParametrosDB parametrosDB;
-        private string connectionStringOrigenEF;
-        private string connectionStringDestino;
+        //private string connectionStringOrigenEF;
+        //private string connectionStringDestino;
         private string usuarioQueProcesa;
 
         public IntegraVentasBandejaDB(IParametrosDB paramDB, string usr) 
         {
-            connectionStringOrigenEF = paramDB.ConnectionStringSourceEF;
-            connectionStringDestino = paramDB.ConnStringTarget;
+            //connectionStringOrigenEF = paramDB.ConnectionStringSourceEF;
+            //connectionStringDestino = paramDB.ConnStringTarget;
             parametrosDB = paramDB;
             usuarioQueProcesa = usr;
         }
@@ -39,10 +39,10 @@ namespace IntegradorDeGP
 
         private INTEGRAEntities getDbContextIntegra()
         {
-            if (string.IsNullOrEmpty(this.connectionStringOrigenEF))
+            if (string.IsNullOrEmpty(parametrosDB.ConnectionStringSourceEF))
                 return new INTEGRAEntities();
 
-            return new INTEGRAEntities(this.connectionStringOrigenEF);
+            return new INTEGRAEntities(parametrosDB.ConnectionStringSourceEF);
         }
 
         private bool probarConexionDBGP()
@@ -110,6 +110,20 @@ namespace IntegradorDeGP
             }
         }
 
+        private string LocArgentina_GetTipoContribuyente(string custnmbr)
+        {
+            using (var db = this.getDbContextGP())
+            {
+                // verificar la conexión con el servidor de bd
+                if (!this.probarConexionDBGP())
+                {
+                    throw new InvalidOperationException("No se pudo establecer la conexión con el servidor al tratar de leer los datos del cliente " + custnmbr);
+                }
+
+                var datos = db.vwRmClientes.AsQueryable();
+                return datos.Where(m => m.custnmbr == custnmbr)?.Select(x => x.RESP_TYPE)?.First() ;
+            }
+        }
         //verifica si transición es válida
         private IList<docGetSiguienteStatus_Result> getSiguienteStatus(short tipoDoc, string numDoc, string transicion)
         {
@@ -170,10 +184,11 @@ namespace IntegradorDeGP
             eConnectMethods eConnObject = new eConnectMethods();
 
             var dpf = getPrefacturasDetalle(preFacturasAIntegrar.NUMDOCARN, preFacturasAIntegrar.TIPODOCARN);
-            documentoSOP.preparaFacturaSOP(preFacturasAIntegrar, dpf, sTimeStamp);
+            string tipoContribuyente = LocArgentina_GetTipoContribuyente(preFacturasAIntegrar.IDCLIENTE);
+            documentoSOP.preparaFacturaSOP(preFacturasAIntegrar, dpf, sTimeStamp, tipoContribuyente);
             docEConnectSOP.SOPTransactionType = new SOPTransactionType[] { documentoSOP.FacturaSop };
             serializa(docEConnectSOP);
-            eConnResult = eConnObject.CreateTransactionEntity(connectionStringDestino, this.SDocXml);
+            eConnResult = eConnObject.CreateTransactionEntity(parametrosDB.ConnStringTarget, this.SDocXml);
            return documentoSOP.FacturaSop.taSopHdrIvcInsert;
 
         }
@@ -200,7 +215,7 @@ namespace IntegradorDeGP
             short cumplePreCondiciones=0;
             string mensajePreCondicion = string.Empty;
 
-            var precondiciones = getStatusPreCondiciones(integraVentas.TIPODOCGP, integraVentas.NUMDOCGP, transicion);
+            var precondiciones = getPreCondiciones(integraVentas.TIPODOCGP, integraVentas.NUMDOCGP, transicion);
 
             int condicionesCumplidas = precondiciones.Where(x => x.cumplePreCondiciones == 1).Count();
             if (condicionesCumplidas == precondiciones.Count())
@@ -309,7 +324,8 @@ namespace IntegradorDeGP
                         {
                             iFacturasIntegradas++;
 
-                            string idLog = IngresaLogFactura(item, item.SOPTYPE_GP, item.NUMDOCGP, transicion, "OK", string.Empty);
+                            string idLog = IngresaLogFactura(item, transicion, "Cambia estado porque " + transicion);
+
                             OnProgreso(100 / pfi.Count, string.Concat("Pre factura: ", item.NUMDOCARN, " -> Factura GP: ", item.NUMDOCGP, " Log:", idLog));
                         }
                         else

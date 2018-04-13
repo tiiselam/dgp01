@@ -54,7 +54,8 @@ AS
 --|--------------------------------------------------------------------------------
 --| [sp_PREFACTURACABUpdate] - Update Procedure Script for PREFACTURACAB
 --|--------------------------------------------------------------------------------
-IF EXISTS (SELECT * FROM dbo.sysobjects WHERE id = object_id (N'compuertagp.[sp_PREFACTURACABUpdate]') AND OBJECTPROPERTY(id, N'IsProcedure') = 1) DROP PROCEDURE compuertagp.[sp_PREFACTURACABUpdate]
+IF EXISTS (SELECT * FROM dbo.sysobjects WHERE id = object_id (N'compuertagp.[sp_PREFACTURACABUpdate]') AND OBJECTPROPERTY(id, N'IsProcedure') = 1) 
+	DROP PROCEDURE compuertagp.[sp_PREFACTURACABUpdate];
 GO
 
 CREATE PROCEDURE compuertagp.[sp_PREFACTURACABUpdate]

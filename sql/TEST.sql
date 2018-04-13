@@ -1,6 +1,17 @@
+use tst12
+go
+select *
+from vwrmClientes
+where custnmbr = '000708'
+
+use integra50
+go
+
 select 
 viv.*
 from compuertagp.vwIntegracionesVentas viv
+
+
 
 ----------------------------------------------------------------------------------------------------------------------------
 --Para reintegrar facturas que todavía están en lote en GP.
@@ -93,8 +104,17 @@ from compuertagp.PREFACTURAdet
 ----------------------------------------------------------------
 --delete from l
 select *
+--update l set esactual = 1
 from compuertagp.logintegraciones l
-where l.docstatus = 'INTEGRADO'
+where numdocarn = '100'
+--and id = 112
+order by fechahora
+
+select *
+from tst12..sop30200
+where sopnumbe = 'FV B0088-T0000003'
+
+-- l.docstatus = 'INTEGRADO'
 
 --insert into compuertagp.logintegraciones (tipodocarn, numdocarn, tipodocgp, numdocgp, docstatus,esactual, usuario, fechahora, mensaje)
 SELECT tipodocarn, numdocarn, tipodocgp, numdocgp, docstatus,1, usuario, fechahora, mensaje
