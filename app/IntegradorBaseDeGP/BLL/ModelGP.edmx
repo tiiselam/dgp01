@@ -20,12 +20,14 @@ warning 6002: The table/view 'TST12.dbo.vwRmClientes' does not have a primary ke
         <Function Name="comgp_fnDocStatusPreCondiciones" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="true" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="TIPODOCGP" Type="smallint" Mode="In" />
           <Parameter Name="NUMDOCGP" Type="varchar" Mode="In" />
+          <Parameter Name="TIPODOC" Type="smallint" Mode="In" />
+          <Parameter Name="NUMERODOC" Type="varchar" Mode="In" />
           <Parameter Name="TRANSICION" Type="varchar" Mode="In" />
           <ReturnType>
             <CollectionType>
               <RowType>
                 <Property Name="cumplePreCondiciones" Type="int" Nullable="false" />
-                <Property Name="msjPreCondiciones" Type="varchar" MaxLength="98" />
+                <Property Name="msjPreCondiciones" Type="varchar" MaxLength="114" />
               </RowType>
             </CollectionType>
           </ReturnType>
@@ -51,6 +53,8 @@ warning 6002: The table/view 'TST12.dbo.vwRmClientes' does not have a primary ke
           <FunctionImport Name="comgp_fnDocStatusPreCondiciones" IsComposable="true" ReturnType="Collection(ModelGP.comgp_fnDocStatusPreCondiciones_Result)">
             <Parameter Name="TIPODOCGP" Mode="In" Type="Int16" />
             <Parameter Name="NUMDOCGP" Mode="In" Type="String" />
+            <Parameter Name="TIPODOC" Mode="In" Type="Int16" />
+            <Parameter Name="NUMERODOC" Mode="In" Type="String" />
             <Parameter Name="TRANSICION" Mode="In" Type="String" />
           </FunctionImport>
           <EntitySet Name="vwRmClientes" EntityType="ModelGP.vwRmClientes" />

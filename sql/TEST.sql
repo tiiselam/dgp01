@@ -1,16 +1,118 @@
-use tst12
-go
-select *
-from vwrmClientes
-where custnmbr = '000708'
-
 use integra50
 go
+
+
+--select 'exec compuertagp.sp_LOGINTEGRACIONESInsert @ID, 1, '+''''+rtrim(cstponbr)+''', 3, ' +''''+ rtrim(sopnumbe)+''', '+'''ENVIAR_A_GP'' ,' +'''sa'', '+'''Integrado manualmente'', '+'''LISTO->INTEGRADO Transición OK.'' ;'
+--, sopnumbe, soptype, cstponbr, custnmbr, docdate, bachnumb 
+--from pro12..sop10100
+
 
 select 
 viv.*
 from compuertagp.vwIntegracionesVentas viv
+where docstatus = 'LISTO'
 
+SELECT s.bachnumb, s.cstponbr, *
+FROM PRO12..SOP10100 s
+inner join compuertagp.vwIntegracionesVentas viv
+on s.cstponbr = viv.numdocarn
+AND viv.docstatus = 'CONTABILIZADO'
+--WHERE viv.numdocarn is null
+
+select *
+--DELETE l 
+from compuertagp.LOGINTEGRACIONES l
+where docstatus = 'CONTABILIZADO'
+ --esactual = 1
+AND numdocarn IN 
+(
+'41',                   
+'54' ,                  
+'55'  ,                 
+'57'   ,                
+'58'    ,               
+'59'     ,              
+'67'      ,             
+'69'       ,            
+'72'        ,           
+'74'         ,          
+'75'          ,         
+'76'           ,        
+'77'            ,       
+'78'             ,      
+'79'              ,     
+'80'               ,    
+'81'                ,   
+'82'                 ,  
+'83'                  , 
+'84'                   
+)
+
+select *
+--update l set MENSAJELARGO = 'LISTO->INTEGRADO Transición OK.' -- esactual = 1
+from compuertagp.LOGINTEGRACIONES l
+where docstatus = 'INTEGRADO'
+AND ESACTUAL = 1
+AND numdocarn IN 
+(
+'41',                   
+'54' ,                  
+'55'  ,                 
+'57'   ,                
+'58'    ,               
+'59'     ,              
+'67'      ,             
+'69'       ,            
+'72'        ,           
+'74'         ,          
+'75'          ,         
+'76'           ,        
+'77'            ,       
+'78'             ,      
+'79'              ,     
+'80'               ,    
+'81'                ,   
+'82'                 ,  
+'83'                  , 
+'84'                   
+)
+
+
+
+
+
+select *
+from compuertagp.docGetSiguienteStatus(	1, '137', 'ENVIAR_A_GP')
+
+SELECT *
+FROM PRO12..vwSopFacturasCabezaTH
+WHERE SOPNUMBE NOT LIKE '%T%'
+
+
+--Revisa facturas con guía repetida
+select fe.sopnumbe, *
+from (
+	select 'h' ori,  sopnumbe, soptype, cstponbr, custnmbr, docdate, VOIDSTTS, bachnumb from pro12..sop30200 
+	union all 
+	select 't' ori, sopnumbe, soptype, cstponbr, custnmbr, docdate, VOIDSTTS, bachnumb from pro12..sop10100
+	)  f
+left join pro12..FEI_SOP30200 fe
+	on fe.sopnumbe = f.sopnumbe
+	and fe.soptype = f.soptype
+where f.cstponbr in (
+	select s.cstponbr  --, count(*) --, l.*
+	from (
+			select sopnumbe, soptype, cstponbr, custnmbr, docdate from pro12..sop30200 
+			union all 
+			select sopnumbe, soptype, cstponbr, custnmbr, docdate from pro12..sop10100
+			) s
+	inner join compuertagp.LOGINTEGRACIONES  l
+		on s.cstponbr = l.numdocarn
+	WHERE l.ESACTUAL = 1
+	and s.soptype = 3
+	group by s.cstponbr
+	having count(*) > 1
+)
 
 
 ----------------------------------------------------------------------------------------------------------------------------

@@ -50,7 +50,7 @@ AS
 		print ERROR_NUMBER() + ' ' + ERROR_MESSAGE();  
 		THROW;
 	end catch;
-
+go
 --|--------------------------------------------------------------------------------
 --| [sp_PREFACTURACABUpdate] - Update Procedure Script for PREFACTURACAB
 --|--------------------------------------------------------------------------------

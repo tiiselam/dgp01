@@ -5,7 +5,7 @@
 --
 -----------------------------------------------------------------------------------
 
-use  integra50	--integra10 --
+use  integra10 --integra50	--
 go
 IF DATABASE_PRINCIPAL_ID('rol_integracionesGP') IS NULL
 	create role rol_integracionesGP;

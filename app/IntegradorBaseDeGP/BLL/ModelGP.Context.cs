@@ -30,7 +30,7 @@ namespace IntegradorDeGP.BLL
         public virtual DbSet<vwRmClientes> vwRmClientes { get; set; }
     
         [DbFunction("DynamicsGPEntities", "comgp_fnDocStatusPreCondiciones")]
-        public virtual IQueryable<comgp_fnDocStatusPreCondiciones_Result> comgp_fnDocStatusPreCondiciones(Nullable<short> tIPODOCGP, string nUMDOCGP, string tRANSICION)
+        public virtual IQueryable<comgp_fnDocStatusPreCondiciones_Result> comgp_fnDocStatusPreCondiciones(Nullable<short> tIPODOCGP, string nUMDOCGP, Nullable<short> tIPODOC, string nUMERODOC, string tRANSICION)
         {
             var tIPODOCGPParameter = tIPODOCGP.HasValue ?
                 new ObjectParameter("TIPODOCGP", tIPODOCGP) :
@@ -40,11 +40,19 @@ namespace IntegradorDeGP.BLL
                 new ObjectParameter("NUMDOCGP", nUMDOCGP) :
                 new ObjectParameter("NUMDOCGP", typeof(string));
     
+            var tIPODOCParameter = tIPODOC.HasValue ?
+                new ObjectParameter("TIPODOC", tIPODOC) :
+                new ObjectParameter("TIPODOC", typeof(short));
+    
+            var nUMERODOCParameter = nUMERODOC != null ?
+                new ObjectParameter("NUMERODOC", nUMERODOC) :
+                new ObjectParameter("NUMERODOC", typeof(string));
+    
             var tRANSICIONParameter = tRANSICION != null ?
                 new ObjectParameter("TRANSICION", tRANSICION) :
                 new ObjectParameter("TRANSICION", typeof(string));
     
-            return ((IObjectContextAdapter)this).ObjectContext.CreateQuery<comgp_fnDocStatusPreCondiciones_Result>("[DynamicsGPEntities].[comgp_fnDocStatusPreCondiciones](@TIPODOCGP, @NUMDOCGP, @TRANSICION)", tIPODOCGPParameter, nUMDOCGPParameter, tRANSICIONParameter);
+            return ((IObjectContextAdapter)this).ObjectContext.CreateQuery<comgp_fnDocStatusPreCondiciones_Result>("[DynamicsGPEntities].[comgp_fnDocStatusPreCondiciones](@TIPODOCGP, @NUMDOCGP, @TIPODOC, @NUMERODOC, @TRANSICION)", tIPODOCGPParameter, nUMDOCGPParameter, tIPODOCParameter, nUMERODOCParameter, tRANSICIONParameter);
         }
     }
 }

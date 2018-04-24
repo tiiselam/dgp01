@@ -140,7 +140,7 @@ namespace IntegradorDeGP
             }
         }
 
-        public IList<comgp_fnDocStatusPreCondiciones_Result> getPreCondiciones(short? tipoDocGP, string numDocGP, string transicion)
+        public IList<comgp_fnDocStatusPreCondiciones_Result> getPreCondiciones(short? tipoDocGP, string numDocGP, short? tipoDoc, string numDoc, string transicion)
         {
             using (var db = this.getDbContextGP())
             {
@@ -148,7 +148,7 @@ namespace IntegradorDeGP
                 {
                     throw new InvalidOperationException("No se pudo establecer la conexión con la bd de GP para el documento GP: " + numDocGP);
                 }
-                var datos = db.comgp_fnDocStatusPreCondiciones(tipoDocGP, numDocGP, transicion).AsQueryable();
+                var datos = db.comgp_fnDocStatusPreCondiciones(tipoDocGP, numDocGP, tipoDoc, numDoc, transicion).AsQueryable();
                 return datos.ToList();
             }
         }
@@ -215,7 +215,7 @@ namespace IntegradorDeGP
             short cumplePreCondiciones=0;
             string mensajePreCondicion = string.Empty;
 
-            var precondiciones = getPreCondiciones(integraVentas.TIPODOCGP, integraVentas.NUMDOCGP, transicion);
+            var precondiciones = getPreCondiciones(integraVentas.TIPODOCGP, integraVentas.NUMDOCGP, 0, string.Empty, transicion);
 
             int condicionesCumplidas = precondiciones.Where(x => x.cumplePreCondiciones == 1).Count();
             if (condicionesCumplidas == precondiciones.Count())
@@ -261,15 +261,21 @@ namespace IntegradorDeGP
                         var proximoStatus = getSiguienteStatus(item.TIPODOCARN, item.NUMDOCARN, transicion).First();
                         if (proximoStatus.transicionFactible == 1)
                         {
+                            var precondiciones = getPreCondiciones(3, string.Empty, item.TIPODOCARN, item.NUMDOCARN, transicion);
+                            if (precondiciones.Where(x => x.cumplePreCondiciones == 1).Count() == precondiciones.Count())
+                            {
+                                taSopHdrIvcInsert sopDoc = this.IntegraFacturaSOP(item, sTimeStamp);
+                                iFacturasIntegradas++;
 
-                            taSopHdrIvcInsert sopDoc = this.IntegraFacturaSOP(item, sTimeStamp);
-                            iFacturasIntegradas++;
+                                string idLog = IngresaLogFactura(item, sopDoc.SOPTYPE, sopDoc.SOPNUMBE, transicion, "OK", string.Empty);
+                                OnProgreso(100 / pfi.Count, string.Concat("Pre factura: ", item.NUMDOCARN, " -> Factura GP: ", sopDoc.SOPNUMBE, " Log:", idLog));
+                            }
+                            else
+                                OnProgreso(100 / pfi.Count, string.Concat("Pre factura: ", item.NUMDOCARN, " -> El documento continúa ", docStatus, " ", precondiciones.Where(x => x.cumplePreCondiciones == 0).First().msjPreCondiciones));
 
-                            string idLog = IngresaLogFactura(item, sopDoc.SOPTYPE, sopDoc.SOPNUMBE, transicion, "OK", string.Empty);
-                            OnProgreso(100 / pfi.Count, string.Concat("Pre factura: ", item.NUMDOCARN, " -> Factura GP: ", sopDoc.SOPNUMBE, " Log:", idLog));
                         }
                         else
-                            OnProgreso(100 / pfi.Count, string.Concat("Pre factura: ", item.NUMDOCARN, " -> El documento continúa ", docStatus, " ", proximoStatus.mensaje));
+                            OnProgreso(100 / pfi.Count, string.Concat("Pre factura: ", item.NUMDOCARN, " -> El documento continúa ", docStatus, " ", proximoStatus.mensaje ));
 
                     }
                     catch(eConnectException ec)
