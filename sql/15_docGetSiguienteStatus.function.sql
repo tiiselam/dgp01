@@ -15,6 +15,7 @@ GO
 --ANULA_FACTURA_RM_EN_GP
 --ANULA_FACTURA_SOP_EN_GP
 --
+go
 create function compuertagp.docGetSiguienteStatus(	@TIPODOCARN smallint, @NUMDOCARN varchar(20), @TRANSICION VARCHAR(50))
 returns table
 --Propósito. Obtiene el status destino correspondiente a la transicion del parámetro
